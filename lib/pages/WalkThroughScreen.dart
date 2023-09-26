@@ -2,9 +2,11 @@ import 'dart:async';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/main.dart';
+import 'package:quick_pall_local_repo/pages/LetsGetStartedScreen.dart';
 import 'package:quick_pall_local_repo/widgets/WalkThroughWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import '/widgets/Buttons.dart';
 
 class WalkThroughScreen extends StatelessWidget {
   const WalkThroughScreen({super.key});
@@ -31,33 +33,37 @@ class WalkThroughScreen extends StatelessWidget {
             subText:
                 "Need to send money urgently? No problem! With QuickPal, you can transfer funds quickly and conveniently, even on the go.")
       ],
-      overrideDone: ElevatedButton(
-        child: Text("Continue",
-            style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
-        onPressed: () async {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setBool('hasSeenOnboarding', true);
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => a()));
-        },
-        style: ElevatedButton.styleFrom(
-            side: BorderSide(color: Colors.green.shade50, width: 1),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20))),
-            backgroundColor: Colors.green),
-      ),
+      overrideDone: Widget_ElevatedButton(
+          text: "Continue",
+          backGroundColor: Colors.green,
+          borderColor: Colors.green.shade50,
+          textColor: Colors.white,
+          callBack: () async {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setBool('hasSeenOnboarding', true);
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => LetsGetStartedScreen()));
+          }),
+      // overrideDone: ElevatedButton(
+      //   child: Text("Continue",
+      //       style: TextStyle(fontWeight: FontWeight.w700, color: Colors.white)),
+      //   onPressed: () async {
+      //     SharedPreferences prefs = await SharedPreferences.getInstance();
+      //     prefs.setBool('hasSeenOnboarding', true);
+      //     Navigator.pushReplacement(
+      //         context, MaterialPageRoute(builder: (context) => a()));
+      //   },
+      //   style: ElevatedButton.styleFrom(
+      //       side: BorderSide(color: Colors.green.shade50, width: 1),
+      //       shape: RoundedRectangleBorder(
+      //           borderRadius: BorderRadius.all(Radius.circular(20))),
+      //       backgroundColor: Colors.green),
+      // ),
       showSkipButton: true,
-      skip: OutlinedButton(
-        onPressed: null,
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0))),
-        ),
-        child: const Text(
-          "Skip",
-          style: TextStyle(color: Colors.green),
-        ),
-      ),
+      skip: Widget_OutlinedButton(
+          text: "Skip", textColor: Colors.green, callback: null),
       doneStyle: TextButton.styleFrom(
         primary: Colors.green,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
