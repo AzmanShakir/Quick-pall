@@ -51,20 +51,6 @@ class WalkThroughWidget extends StatelessWidget {
                     color: Color.fromARGB(200, 51, 65, 85)),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text("Continue"),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      side: BorderSide.none,
-                      borderRadius: BorderRadius.all(Radius.circular(20))),
-                  primary: Colors.lightGreen,
-                ),
-              ),
-              Row(
-                children: [],
-              )
             ]),
         margin: const EdgeInsets.only(top: 440.0, bottom: 40),
         height: 500,

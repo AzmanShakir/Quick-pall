@@ -5,7 +5,7 @@ import 'package:quick_pall_local_repo/pages/WalkThroughScreen.dart';
 void main() {
   runApp(MaterialApp(
     title: "Quick Pall",
-    home: WalkThroughScreen(),
+    home: SplashScreen(),
   ));
 }
 
