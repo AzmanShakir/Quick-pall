@@ -7,6 +7,7 @@ import 'package:quick_pall_local_repo/widgets/WalkThroughWidget.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import '/widgets/Buttons.dart';
+import 'package:get/get.dart';
 
 class WalkThroughScreen extends StatelessWidget {
   const WalkThroughScreen({super.key});
@@ -41,10 +42,9 @@ class WalkThroughScreen extends StatelessWidget {
           callBack: () async {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setBool('hasSeenOnboarding', true);
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => LetsGetStartedScreen()));
+            Get.to(LetsGetStartedScreen(),
+                transition: Transition.rightToLeft,
+                duration: Duration(milliseconds: 500));
           }),
       // overrideDone: ElevatedButton(
       //   child: Text("Continue",

@@ -3,9 +3,11 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/main.dart';
 import 'package:quick_pall_local_repo/pages/WalkThroughScreen.dart';
+import 'package:quick_pall_local_repo/pages/Sign-UpScreen.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:quick_pall_local_repo/widgets/Buttons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 
 class LetsGetStartedScreen extends StatelessWidget {
   const LetsGetStartedScreen({super.key});
@@ -21,7 +23,13 @@ class LetsGetStartedScreen extends StatelessWidget {
             Container(
               width: 150,
               child: Widget_OutlinedButton(
-                  text: "Sign Up", callback: () {}, textColor: Colors.black),
+                  text: "Sign Up",
+                  callback: () {
+                    Get.to(SignUp_EmailPasswordScreen(),
+                        transition: Transition.rightToLeft,
+                        duration: Duration(milliseconds: 500));
+                  },
+                  textColor: Colors.black),
             ),
             SizedBox(
               width: 20,

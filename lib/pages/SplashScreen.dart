@@ -3,8 +3,10 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/main.dart';
 import 'package:quick_pall_local_repo/pages/WalkThroughScreen.dart';
+import 'package:quick_pall_local_repo/pages/LetsGetStartedScreen.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
 
 class SplashScreen extends StatefulWidget {
   SplashScreen({super.key});
@@ -22,11 +24,13 @@ class _SplashScreenState extends State<SplashScreen> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _hasSeenWalkthrough = prefs.getBool('hasSeenOnboarding') ?? false;
       if (_hasSeenWalkthrough == true) {
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => a()));
+        Get.off(LetsGetStartedScreen(),
+            transition: Transition.rightToLeft,
+            duration: Duration(milliseconds: 500));
       } else {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => WalkThroughScreen()));
+        Get.off(WalkThroughScreen(),
+            transition: Transition.rightToLeft,
+            duration: Duration(milliseconds: 500));
       }
     });
   }
