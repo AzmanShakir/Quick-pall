@@ -108,69 +108,7 @@ class _SignUp_EmailPasswordScreenState
                           validateEmail(value);
                           return emailValidationResult;
                         }
-//                         if (value != null && value.isEmpty) {
-//                           return 'Please enter an email';
-//                         } else {
-//                           String v;
-
-//                           if (value != null && value is String) {
-//                             v = value;
-//                             if (!Validations.isValidEmail(v)) {
-//                               return "Email is not in correct format";
-//                             }
-
-// return await FutureBuilder<Map<String, dynamic>?>(
-//           future: await AccountController.getDocumentIfItExists(
-//                                       'AccountHolder', v),
-//           builder: (context, snapshot) {
-//             if (snapshot.connectionState == ConnectionState.waiting) {
-//               return CircularProgressIndicator(); // You can display a loading indicator while waiting for the result.
-//             } else if (snapshot.hasError) {
-//               return Text("An error occurred: ${snapshot.error}");
-//             } else if (snapshot.hasData) {
-//               Map<String, dynamic>? doc = snapshot.data;
-//               if (doc != null && doc is Map<String, dynamic>) {
-//                 if (doc["IsActive"] == true) {
-//                   return "This email is already in use";
-//                 }
-//               }
-//             }
-//             return null; // Valid email
-//           },
-//         );
-
-//                             // Map<String, dynamic>? doc;
-//                             // (() async {
-//                             //   await AccountController.getDocumentIfItExists(
-//                             //           'AccountHolder', v)
-//                             //       .then((value) {
-//                             //     doc = value;
-//                             //     print("azan");
-//                             //   });
-//                             // })();
-
-//                             // Map<String, dynamic>? doc = null;
-//                             //   await  AccountController.getDocumentIfItExists(
-//                             //             'AccountHolder', v)
-//                             //         .then((value) {
-//                             //   doc = value;
-//                             //   print("azan");
-//                             //   print(value);
-//                             // });
-//                             // print("Usman");
-//                             // print(documentData);
-//                             // doc = documentData as Map<String, dynamic>?;
-//                             // print(doc);
-
-//                             // if (doc != null && doc is Map<String, dynamic>) {
-//                             //   if (doc!["IsActive"] == true) {
-//                             //     return "This email is already in use";
-//                             //   }
-//                             //   // Document exists, and you can access its data in the 'documentData' variable
-//                             // }
-//                           }
-//                           return null;
-//                         }
+//
                       },
                       onSaved: (value) {
                         _email = value;

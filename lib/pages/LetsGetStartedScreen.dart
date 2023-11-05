@@ -8,6 +8,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:quick_pall_local_repo/widgets/Buttons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:get/get.dart';
+import 'package:quick_pall_local_repo/pages/Sign-InScreen.dart';
 
 class LetsGetStartedScreen extends StatelessWidget {
   const LetsGetStartedScreen({super.key});
@@ -38,7 +39,11 @@ class LetsGetStartedScreen extends StatelessWidget {
               width: 150,
               child: Widget_ElevatedButton(
                   text: "Sign In",
-                  callBack: () {},
+                  callBack: () {
+                    Get.to(SignInScreen(),
+                        transition: Transition.rightToLeft,
+                        duration: Duration(milliseconds: 500));
+                  },
                   textColor: Colors.black,
                   backGroundColor: Colors.green,
                   borderColor: Colors.green.shade100),

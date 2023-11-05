@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AccountHolder {
   AccountHolder(
       {required this.Country,
@@ -8,7 +10,9 @@ class AccountHolder {
       required this.Password,
       required this.Phone,
       required this.IsActive,
-      required this.Pin});
+      required this.Pin,
+      this.CreatedAt = null,
+      this.UpdatedAt = null});
 
   String Email;
   String Password;
@@ -19,4 +23,6 @@ class AccountHolder {
   String Image;
   int Money;
   bool IsActive;
+  Timestamp? CreatedAt;
+  Timestamp? UpdatedAt;
 }

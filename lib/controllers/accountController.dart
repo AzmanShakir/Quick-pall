@@ -67,8 +67,7 @@ class AccountController {
       var doc = FirebaseFirestore.instance
           .collection("AccountHolder")
           .doc(user.Email);
-      var x;
-      await doc.set(GetJSON(x));
+      await doc.set(GetJSON(user));
       return true;
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "CreateAccount");
@@ -89,8 +88,48 @@ class AccountController {
       "Image": user.Image,
       "Money": user.Money,
       "IsActive": user.IsActive,
-      'createdAt': timestamp,
-      'updatedAt': timestamp,
+      'CreatedAt': timestamp,
+      'UpdatedAt': timestamp,
     };
+  }
+
+  static Future<AccountHolder?> SignIn(email, password) async {
+    try {
+      Map<String, dynamic>? userJson =
+          await getDocumentIfItExists("AccountHolder", email);
+      if (userJson == null) return null;
+      if (userJson!["Password"] != password) return null;
+      AccountHolder? user = GetAccountHolderFromJson(userJson);
+      return user;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "SignIn");
+      print(e);
+      return null;
+    }
+  }
+
+  static AccountHolder? GetAccountHolderFromJson(
+      Map<String, dynamic> userJson) {
+    try {
+      AccountHolder? user = null;
+      user = AccountHolder(
+          Country: userJson["Country"].toString(),
+          Email: userJson["Email"].toString(),
+          Image: userJson["Image"].toString(),
+          Money: int.parse(userJson["Money"].toString()),
+          Name: userJson["Name"].toString(),
+          Password: userJson["Password"].toString(),
+          Phone: userJson["Phone"].toString(),
+          IsActive: userJson["IsActive"],
+          Pin: userJson["Pin"].toString(),
+          CreatedAt: userJson["CreatedAt"],
+          UpdatedAt: userJson["UpdatedAt"]);
+      return user;
+    } catch (e) {
+      Logger.PushLog(
+          e.toString(), "AccountController", "GetAccountHolderFromJson");
+      print(e);
+      return null;
+    }
   }
 }
