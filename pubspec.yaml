@@ -48,6 +48,7 @@ dependencies:
   fluttertoast: ^8.0.6
   email_auth:
   mailer: ^6.0.1
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quick_pall_local_repo/pages/HomeScreen.dart';
 import 'package:quick_pall_local_repo/pages/SplashScreen.dart';
 import 'package:quick_pall_local_repo/pages/WalkThroughScreen.dart';
 import 'package:quick_pall_local_repo/pages/LetsGetStartedScreen.dart';
@@ -12,7 +13,8 @@ Future main() async {
   await Firebase.initializeApp();
   runApp(GetMaterialApp(
     title: "Quick Pall",
-    home: SplashScreen(),
+    home: HomeScreen(),
+    // home: SplashScreen(),
     // home: LetsGetStartedScreen(),
   ));
 }
