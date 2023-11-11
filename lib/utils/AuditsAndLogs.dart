@@ -23,3 +23,25 @@ class Logger {
     }
   }
 }
+
+class Auditer {
+  static PushAudit(Map<String, dynamic> oldData, Map<String, dynamic> newData,
+      String CollectionName) async {
+    try {
+      Map<String, dynamic> OldmodifiedMap = addPrefixToKeys(oldData, 'old');
+      Map<String, dynamic> NewmodifiedMap = addPrefixToKeys(newData, 'new');
+      Map<String, dynamic> AuditDoc = {...OldmodifiedMap, ...NewmodifiedMap};
+      AuditDoc["CollectionName"] = CollectionName;
+      var doc1 = FirebaseFirestore.instance.collection("Audits").doc();
+      await doc1.set(AuditDoc);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  static Map<String, dynamic> addPrefixToKeys(
+      Map<String, dynamic> originalMap, String prefix) {
+    return Map.fromEntries(originalMap.entries
+        .map((entry) => MapEntry('$prefix${entry.key}', entry.value)));
+  }
+}

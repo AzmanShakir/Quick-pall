@@ -13,7 +13,7 @@ Future main() async {
   await Firebase.initializeApp();
   runApp(GetMaterialApp(
     title: "Quick Pall",
-    home: HomeScreen(),
+    home: SplashScreen(),
     // home: SplashScreen(),
     // home: LetsGetStartedScreen(),
   ));

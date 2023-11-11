@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/Controllers/accountController.dart';
+import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/pages/AccountScreen.dart';
+import 'package:quick_pall_local_repo/pages/TransactionViewScreen.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  AccountHolder user;
+  HomeScreen({super.key, required this.user});
 
   @override
   State<HomeScreen> createState() => _HomeScreen();
@@ -13,14 +17,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreen extends State<HomeScreen> {
   var _currentTabIndex = 0;
+  var _tabs;
+  @override
+  void initState() {
+    super.initState();
 
-  var _tabs = [
-    Home(),
-    Center(
-      child: Text("COnatcts"),
-    ),
-    AccountScreen()
-  ];
+    // Access widget properties in the initState method
+    _tabs = [
+      Home(user: widget.user),
+      Center(
+        child: Text("Contacts"),
+      ),
+      AccountScreen(),
+    ];
+  }
+
+  //[
+  //   Home(widget.user),
+  //   Center(
+  //     child: Text("COnatcts"),
+  //   ),
+  //   AccountScreen()
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -91,71 +109,24 @@ class _HomeScreen extends State<HomeScreen> {
 }
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  AccountHolder user;
+  Home({super.key, required this.user});
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  var _transactionsList = [];
+  var _accountBalance;
+  var _transactionsList = null;
   @override
   void initState() {
     super.initState();
     setTransactionList();
+    UpdateUserData();
+    _accountBalance = widget.user.Money.toString();
   }
 
-  var _accountBalance = "0";
-  // var _transactionsList = [
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType"),
-  //   TransactionsViewModel(
-  //       Name: "Name",
-  //       Image: "Image",
-  //       Money: "Money",
-  //       dateTime: DateTime.now(),
-  //       transactionType: "transactionType")
-  // ];
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -185,59 +156,95 @@ class _HomeState extends State<Home> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   //Send
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.transparent,
-                      child: IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.send_outlined,
-                            color: Colors.black,
-                          )),
-                    ),
+                  Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Colors.transparent,
+                          child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.send_outlined,
+                                color: Colors.black,
+                              )),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Send",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   SizedBox(
-                    width: 30,
+                    width: 50,
                   ),
                   //Request
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.transparent,
-                      child: IconButton(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.download_outlined,
-                            color: Colors.black,
-                          )),
-                    ),
+                  Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Colors.transparent,
+                          child: IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.download_outlined,
+                                color: Colors.black,
+                              )),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Request",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   ),
                   SizedBox(
-                    width: 30,
+                    width: 50,
                   ),
                   //withdraw
-                  Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black, width: 2),
-                        borderRadius: BorderRadius.all(Radius.circular(50))),
-                    child: CircleAvatar(
-                      radius: 25,
-                      backgroundColor: Colors.transparent,
-                      child: IconButton(
-                          iconSize: 30,
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.arrow_circle_right_outlined,
-                            color: Colors.black,
-                          )),
-                    ),
+                  Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 2),
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(50))),
+                        child: CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Colors.transparent,
+                          child: IconButton(
+                              iconSize: 30,
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.arrow_circle_right_outlined,
+                                color: Colors.black,
+                              )),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text(
+                        "Withdraw",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ],
                   )
                 ],
               )
@@ -252,83 +259,97 @@ class _HomeState extends State<Home> {
                 "Transaction History",
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
               ),
-              Expanded(
-                  child: TextButton(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      "View All",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                    Icon(
-                      Icons.keyboard_arrow_right_outlined,
-                      color: Colors.green,
-                    ),
-                  ],
-                ),
-                onPressed: () {},
-              )),
             ],
           ),
         ),
         SizedBox(
-          height: 30,
+          height: 0,
         ),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Container(
-              // height: 200,
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 30,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            _transactionsList[index].Name,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(DateFormat("yyyy-MM-dd")
-                              .format(_transactionsList[index].dateTime)
-                              .toString())
-                        ],
-                      ),
-                      Expanded(
-                          child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Text(
-                            _transactionsList[index].Money,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 18),
-                          ),
-                          Text(_transactionsList[index].transactionType)
-                        ],
-                      ))
-                    ],
-                  );
-                  // return Text("Azan");
-                },
-                itemCount: _transactionsList.length,
-                itemExtent: 70,
-              ),
-            ),
+                // height: 200,
+                child: (_transactionsList == null)
+                    ? Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.green,
+                        ),
+                        // child: Text("No History"),
+                      )
+                    : (_transactionsList.length == 0)
+                        ? Center(
+                            // child: CircularProgressIndicator(),
+                            child: Text("No History"),
+                          )
+                        : ListView.builder(
+                            itemBuilder: (context, index) {
+                              return InkWell(
+                                onTap: () async {
+                                  await Get.to(
+                                      TransactionViewScreen(
+                                          model: _transactionsList[index]),
+                                      transition: Transition.rightToLeft,
+                                      duration: Duration(milliseconds: 500));
+                                  setState(() {
+                                    setTransactionList();
+                                  });
+                                },
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: NetworkImage(
+                                          _transactionsList[index].Image),
+                                      radius: 30,
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Text(
+                                          _transactionsList[index].Name,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
+                                        ),
+                                        Text(DateFormat("yyyy-MM-dd")
+                                            .format(_transactionsList[index]
+                                                .dateTime)
+                                            .toString())
+                                      ],
+                                    ),
+                                    Expanded(
+                                        child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      children: [
+                                        SizedBox(
+                                          height: 15,
+                                        ),
+                                        Text(
+                                          _transactionsList[index].Money,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18),
+                                        ),
+                                        Text(_transactionsList[index]
+                                            .transactionType)
+                                      ],
+                                    ))
+                                  ],
+                                ),
+                              );
+                              // return Text("Azan");
+                            },
+                            itemCount: _transactionsList.length,
+                            itemExtent: 70,
+                          )),
           ),
         )
       ],
@@ -336,8 +357,7 @@ class _HomeState extends State<Home> {
   }
 
   void setTransactionList() async {
-    var x =
-        await AccountController.GetTransactionsList("azanalifarooqi@gmail.com");
+    var x = await AccountController.GetTransactionsList(widget.user.Email);
     print(x);
     if (x != null && x is List<TransactionsViewModel>) {
       _transactionsList = x;
@@ -348,6 +368,17 @@ class _HomeState extends State<Home> {
     setState(() {
       if (x != null && x is List<TransactionsViewModel>) {
         _transactionsList = x;
+      }
+    });
+  }
+
+  void UpdateUserData() async {
+    var u =
+        await AccountController.SignIn(widget.user.Email, widget.user.Password);
+
+    setState(() {
+      if (u != null && u is AccountHolder) {
+        widget.user = u;
       }
     });
   }

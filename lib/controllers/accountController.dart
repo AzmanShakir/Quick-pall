@@ -68,7 +68,7 @@ class AccountController {
       var doc = FirebaseFirestore.instance
           .collection("AccountHolder")
           .doc(user.Email);
-      await doc.set(GetJSON(user));
+      await doc.set(GetAccountHolderJSON(user));
       return true;
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "CreateAccount");
@@ -77,7 +77,7 @@ class AccountController {
     }
   }
 
-  static Map<String, dynamic> GetJSON(AccountHolder user) {
+  static Map<String, dynamic> GetAccountHolderJSON(AccountHolder user) {
     final timestamp = FieldValue.serverTimestamp();
     return {
       "Email": user.Email,
@@ -91,6 +91,19 @@ class AccountController {
       "IsActive": user.IsActive,
       'CreatedAt': timestamp,
       'UpdatedAt': timestamp,
+    };
+  }
+
+  static Map<String, dynamic> GetUserTransactionJSON(TransactionsViewModel t) {
+    // final timestamp = FieldValue.serverTimestamp();
+    return {
+      "Amount": t.Money,
+      "FriendId": t.Email,
+      "IsActive": t.IsActive,
+      "Reason": t.Reason,
+      "TransactionType": t.transactionType,
+      'createdAt': t.dateTime,
+      'updatedAt': t.dateTime,
     };
   }
 
@@ -124,7 +137,7 @@ class AccountController {
           IsActive: userJson["IsActive"],
           Pin: userJson["Pin"].toString(),
           CreatedAt: userJson["CreatedAt"],
-          UpdatedAt: userJson["UpdatedAt"]);
+          UpdatedAt: userJson["updatedAt"]);
       return user;
     } catch (e) {
       Logger.PushLog(
@@ -145,51 +158,39 @@ class AccountController {
       print(transactionArray[0]);
       print("Above is transactions Array");
       List<TransactionsViewModel> lst = [];
-      // transactionArray.forEach((DocumentReference element) async {
-      //   final firestore = FirebaseFirestore.instance;
-      //   DocumentSnapshot transactionSnapShot = await element.get();
-
-      //   print("Before get");
-      //   print(transactionSnapShot);
-      //   print("after get");
-      //   if (transactionSnapShot.exists) {
-      //     // Document exists, you can access its data
-      //     Map<String, dynamic> data =
-      //         transactionSnapShot.data() as Map<String, dynamic>;
-      //     TransactionsViewModel t = TransactionsViewModel(
-      //         Image: "Image",
-      //         Money: data["Amount"],
-      //         Name: data["FriendId"],
-      //         dateTime: data["createdAt"],
-      //         transactionType: data["TransactionType"]);
-      //     lst.add(t);
-      //     print('Document data: $data');
-      //   } else {
-      //     print('Transaction does not exist');
-      //   }
-      // });
       for (DocumentReference element in transactionArray) {
         final firestore = FirebaseFirestore.instance;
         DocumentSnapshot transactionSnapShot = await element.get();
 
         print("Before get");
-        print(transactionSnapShot);
+        print(element.id);
         print("After get");
 
         if (transactionSnapShot.exists) {
           // Document exists, you can access its data
           Map<String, dynamic> data =
               transactionSnapShot.data() as Map<String, dynamic>;
-
-          TransactionsViewModel t = TransactionsViewModel(
-            Image: "Image",
-            Money: data["Amount"],
-            Name: data["FriendId"],
-            dateTime: data["createdAt"].toDate(),
-            transactionType: data["TransactionType"],
-          );
-
-          lst.add(t);
+          var friendDoc =
+              await getDocumentIfItExists("AccountHolder", data["FriendId"]);
+          if (data["IsActive"] == true) {
+            TransactionsViewModel t = TransactionsViewModel(
+              TransactionReference: element.id,
+              Reason: data["Reason"],
+              Image: friendDoc!["Image"],
+              Email: friendDoc!["Email"],
+              Money: data["Amount"],
+              IsActive: data["IsActive"],
+              Name: friendDoc!["Name"],
+              dateTime: data["createdAt"].toDate(),
+              transactionType: data["TransactionType"],
+            );
+            if (t.transactionType == "Sent") {
+              t.Money = "-" + t.Money;
+            } else if (t.transactionType == "Sent") {
+              t.Money = "+" + t.Money;
+            }
+            lst.add(t);
+          }
         } else {
           print('Transaction does not exist');
         }
@@ -197,6 +198,25 @@ class AccountController {
       return lst;
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "GetTransactionsList");
+      print(e);
+    }
+  }
+
+  static Future<List<TransactionsViewModel>?> DeleteTransaction(
+      String Id, TransactionsViewModel t) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      Map<String, dynamic> oldJson = GetUserTransactionJSON(t);
+      Map<String, dynamic> newJson = GetUserTransactionJSON(t);
+      newJson["IsActive"] = false;
+      newJson["updatedAt"] = timestamp;
+      var doc =
+          FirebaseFirestore.instance.collection("UserTransactions").doc(Id);
+      await doc.set(newJson);
+      Auditer.PushAudit(oldJson, newJson, "AccountController");
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "DeleteTransaction");
       print(e);
     }
   }

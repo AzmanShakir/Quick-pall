@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:quick_pall_local_repo/pages/HomeScreen.dart';
 import '/utils/Validations.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
@@ -290,7 +291,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                         color: Colors.green,
                                       ),
                                       SizedBox(height: 16.0),
-                                      Text("Signing up..."),
+                                      Text("Signing in..."),
                                     ],
                                   ),
                                 ),
@@ -334,7 +335,10 @@ class _SignInScreenState extends State<SignInScreen> {
                             );
                           } else {
                             Navigator.of(context).pop();
-                            Get.offAll(SignUp_EmailPasswordScreen(),
+                            Get.offAll(
+                                HomeScreen(
+                                  user: user,
+                                ),
                                 transition: Transition.rightToLeft,
                                 duration: Duration(milliseconds: 500));
                           }
