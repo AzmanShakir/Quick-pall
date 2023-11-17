@@ -32,7 +32,9 @@ class _HomeScreen extends State<HomeScreen> {
         scaffoldKey: _scaffoldKey,
         user: widget.user,
       ),
-      AccountScreen(),
+      AccountScreen(
+        user: widget.user,
+      ),
     ];
   }
 

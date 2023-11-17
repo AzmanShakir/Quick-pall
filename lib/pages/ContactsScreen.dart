@@ -22,13 +22,20 @@ class _ContactsScreenState extends State<ContactsScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    GetUser();
     initListOfFriends();
   }
 
+  void GetUser() async {
+    AccountHolder? u;
+    u = await AccountController.SignIn(widget.user.Email, widget.user.Password);
+    setState(() {
+      if (u != null && u is AccountHolder) widget.user = u;
+    });
+  }
+
   void initListOfFriends() async {
-    var f = await AccountController.GetFriendsList(
-            "aliazanaliazanazanali@outlook.com") ??
-        [];
+    var f = await AccountController.GetFriendsList(widget.user.Email) ?? [];
     if (f.isNotEmpty) {
       f.sort((a, b) => a.Name.compareTo(b.Name));
       friends = f;
