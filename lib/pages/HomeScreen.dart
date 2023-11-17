@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/Controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/pages/AccountScreen.dart';
+import 'package:quick_pall_local_repo/pages/ContactsScreen.dart';
+import 'package:quick_pall_local_repo/pages/Sign-InScreen.dart';
 import 'package:quick_pall_local_repo/pages/TransactionViewScreen.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
 import 'package:intl/intl.dart';
@@ -18,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreen extends State<HomeScreen> {
   var _currentTabIndex = 0;
   var _tabs;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
     super.initState();
@@ -25,8 +28,9 @@ class _HomeScreen extends State<HomeScreen> {
     // Access widget properties in the initState method
     _tabs = [
       Home(user: widget.user),
-      Center(
-        child: Text("Contacts"),
+      ContactsScreen(
+        scaffoldKey: _scaffoldKey,
+        user: widget.user,
       ),
       AccountScreen(),
     ];
@@ -64,6 +68,8 @@ class _HomeScreen extends State<HomeScreen> {
                 ))
           ],
         ),
+        key: _scaffoldKey,
+        resizeToAvoidBottomInset: false,
         body: _tabs[_currentTabIndex],
         bottomNavigationBar: BottomNavigationBar(
           selectedFontSize: 18,

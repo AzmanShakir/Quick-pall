@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:quick_pall_local_repo/models/FriendsViewModel.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
 import '/models/AccountHolder.dart';
 import 'package:path_provider/path_provider.dart';
@@ -151,14 +152,14 @@ class AccountController {
   static Future<List<TransactionsViewModel>?> GetTransactionsList(
       String UserEmail) async {
     try {
-      Map<String, dynamic>? transactionsJson =
+      Map<String, dynamic>? ContactsJSON =
           await getDocumentIfItExists("Transactions", UserEmail);
-      if (transactionsJson == null) return null;
-      var transactionArray = transactionsJson!["TransactionArray"];
-      print(transactionArray[0]);
+      if (ContactsJSON == null) return null;
+      var FriendArray = ContactsJSON!["TransactionArray"];
+      print(FriendArray[0]);
       print("Above is transactions Array");
       List<TransactionsViewModel> lst = [];
-      for (DocumentReference element in transactionArray) {
+      for (DocumentReference element in FriendArray) {
         final firestore = FirebaseFirestore.instance;
         DocumentSnapshot transactionSnapShot = await element.get();
 
@@ -219,5 +220,98 @@ class AccountController {
       Logger.PushLog(e.toString(), "AccountController", "DeleteTransaction");
       print(e);
     }
+  }
+
+  static Future<List<FriendsViewModel>?> GetFriendsList(
+      String UserEmail) async {
+    try {
+      Map<String, dynamic>? ContactsJSON =
+          await getDocumentIfItExists("Contacts", UserEmail);
+      if (ContactsJSON == null) return null;
+      var FriendArray = ContactsJSON!["FriendArray"];
+      print(FriendArray[0]);
+      print("Above is Friend Array");
+      List<FriendsViewModel> lst = [];
+      for (DocumentReference element in FriendArray) {
+        final firestore = FirebaseFirestore.instance;
+        DocumentSnapshot ContactSnapShot = await element.get();
+
+        print("Before get");
+        print(element.id);
+        print("After get");
+
+        if (ContactSnapShot.exists) {
+          // Document exists, you can access its data
+          Map<String, dynamic> data =
+              ContactSnapShot.data() as Map<String, dynamic>;
+          var UserContact =
+              await getDocumentIfItExists("UserContacts", element.id);
+          var FriendData = await getDocumentIfItExists(
+              "AccountHolder", UserContact!["FriendEmail"]);
+          // print(FriendData);
+          String Name = FriendData!["Name"];
+          if (UserContact["IsActive"] == true) {
+            FriendsViewModel t = FriendsViewModel(
+                ContactReference: element.id,
+                Image: FriendData!["Image"],
+                Email: FriendData!["Email"],
+                Name: FriendData!["Name"],
+                createdAt: UserContact["createdAt"].toDate(),
+                updatedAT: UserContact["updatedAt"].toDate(),
+                Tag: Name[0]);
+            lst.add(t);
+          }
+        } else {
+          print('Friend does not exist');
+        }
+      }
+      print("List Created Successfluu");
+
+      // for (int i = 65; i <= 96; i++) {
+      //   // 97 is the ASCII code for 'a', and 122 is the ASCII code for 'z'
+      //   String letter = String.fromCharCode(i);
+      //   FriendsViewModel t = FriendsViewModel(
+      //       ContactReference: "element.id",
+      //       Image: "FriendData![]",
+      //       Email: "FriendData![]",
+      //       Name: letter,
+      //       Tag: letter);
+      //   lst.add(t);
+      // }
+
+      return lst;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "GetFriendsList");
+      print(e);
+    }
+  }
+
+  static Future<bool> DeleteFriend(FriendsViewModel friend) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+      Map<String, dynamic> oldJson = GetUserContactJSON(friend);
+      Map<String, dynamic> newJson = GetUserContactJSON(friend);
+      newJson["IsActive"] = false;
+      newJson["updatedAt"] = timestamp;
+      var doc = FirebaseFirestore.instance
+          .collection("UserContacts")
+          .doc(friend.ContactReference);
+      await doc.set(newJson);
+      Auditer.PushAudit(oldJson, newJson, "AccountController");
+      return true;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "DeleteFriend");
+      print(e);
+      return false;
+    }
+  }
+
+  static Map<String, dynamic> GetUserContactJSON(FriendsViewModel friend) {
+    return {
+      "FriendEmail": friend.Email,
+      "IsActive": true,
+      "createdAt": friend.createdAt,
+      "updatedAt": friend.updatedAT,
+    };
   }
 }
