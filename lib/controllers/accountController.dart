@@ -337,9 +337,11 @@ class AccountController {
       await doc.set(newJson);
       print("User Updated");
       Auditer.PushAudit(oldJson, newJson, "AccountHolder");
+      return true;
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "UpdateUser");
       print(e);
+      return false;
     }
   }
 }

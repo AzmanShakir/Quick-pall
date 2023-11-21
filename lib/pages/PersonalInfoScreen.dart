@@ -266,8 +266,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                   Pin: widget.user.Pin);
                             }
 
-                            bool status = true;
-                            await AccountController.UpdateUser(
+                            bool status = await AccountController.UpdateUser(
                                 OldData: widget.user, NewData: UpdatedUser);
                             if (status == false) {
                               Navigator.of(context).pop();
@@ -294,7 +293,7 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                                                 size: 70,
                                               )),
                                           SizedBox(height: 16.0),
-                                          Text("Invalid Credentials"),
+                                          Text("Cannot Update"),
                                         ],
                                       ),
                                     ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:get/get.dart';
+import 'package:quick_pall_local_repo/pages/ChangeSecurityScreen.dart';
 import 'package:quick_pall_local_repo/pages/LetsGetStartedScreen.dart';
 import 'package:quick_pall_local_repo/pages/PersonalInfoScreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,7 +91,14 @@ class _AccountScreenState extends State<AccountScreen> {
             height: 30,
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                  ChangeSecurityScreen(
+                    user: widget.user,
+                  ),
+                  transition: Transition.rightToLeft,
+                  duration: Duration(milliseconds: 500));
+            },
             child: Row(
               children: [
                 Icon(Icons.security_outlined),
