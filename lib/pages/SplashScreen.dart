@@ -20,6 +20,15 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _hasSeenWalkthrough = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // This method is called when the dependencies of the widget change,
+    // which can happen when the widget is first created or when it rebuilds.
+    print("didChangeDependencies executed");
+  }
+
   @override
   void initState() {
     super.initState();
@@ -29,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
       String Email = prefs.getString('Email') ?? "null";
       String Password = prefs.getString('Password') ?? "null";
+      print(Email + "   " + Password);
       if (Email != "null" && Password != "null") {
         AccountHolder? user;
         user = await AccountController.SignIn(Email, Password);

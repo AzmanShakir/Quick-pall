@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:get/get.dart';
+import 'package:quick_pall_local_repo/pages/LetsGetStartedScreen.dart';
 import 'package:quick_pall_local_repo/pages/PersonalInfoScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountScreen extends StatefulWidget {
   AccountHolder user;
@@ -110,7 +112,14 @@ class _AccountScreenState extends State<AccountScreen> {
             height: 30,
           ),
           InkWell(
-            onTap: () {},
+            onTap: () async {
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              prefs.remove("Email");
+              prefs.remove("Password");
+              Get.off(LetsGetStartedScreen(),
+                  transition: Transition.rightToLeft,
+                  duration: Duration(milliseconds: 500));
+            },
             child: Row(
               children: [
                 Icon(

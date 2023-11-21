@@ -340,6 +340,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   await SharedPreferences.getInstance();
                               prefs.setString('Email', user.Email);
                               prefs.setString('Password', user.Password);
+                              print("Remember Me checked");
                             }
                             Navigator.of(context).pop();
                             Get.offAll(
