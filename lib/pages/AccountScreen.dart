@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
+import 'package:get/get.dart';
+import 'package:quick_pall_local_repo/pages/PersonalInfoScreen.dart';
 
 class AccountScreen extends StatefulWidget {
   AccountHolder user;
@@ -57,7 +59,14 @@ class _AccountScreenState extends State<AccountScreen> {
             height: 40,
           ),
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Get.to(
+                  PersonalInfoScreen(
+                    user: widget.user,
+                  ),
+                  transition: Transition.rightToLeft,
+                  duration: Duration(milliseconds: 500));
+            },
             child: Row(
               children: [
                 Icon(Icons.person_2_outlined),

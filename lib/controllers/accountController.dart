@@ -1,3 +1,4 @@
+// import 'dart:js_util';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -66,10 +67,14 @@ class AccountController {
 
   static Future<bool> CreateAccount(AccountHolder user) async {
     try {
+      final timestamp = FieldValue.serverTimestamp();
       var doc = FirebaseFirestore.instance
           .collection("AccountHolder")
           .doc(user.Email);
-      await doc.set(GetAccountHolderJSON(user));
+      Map<String, dynamic> json = GetAccountHolderJSON(user);
+      json["createdAt"] = timestamp;
+      json["updatedAt"] = timestamp;
+      await doc.set(json);
       return true;
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "CreateAccount");
@@ -79,7 +84,6 @@ class AccountController {
   }
 
   static Map<String, dynamic> GetAccountHolderJSON(AccountHolder user) {
-    final timestamp = FieldValue.serverTimestamp();
     return {
       "Email": user.Email,
       "Password": user.Password,
@@ -90,8 +94,8 @@ class AccountController {
       "Image": user.Image,
       "Money": user.Money,
       "IsActive": user.IsActive,
-      'CreatedAt': timestamp,
-      'UpdatedAt': timestamp,
+      'createdAt': user.CreatedAt,
+      'updatedAt': user.UpdatedAt,
     };
   }
 
@@ -137,8 +141,9 @@ class AccountController {
           Phone: userJson["Phone"].toString(),
           IsActive: userJson["IsActive"],
           Pin: userJson["Pin"].toString(),
-          CreatedAt: userJson["CreatedAt"],
+          CreatedAt: userJson["createdAt"],
           UpdatedAt: userJson["updatedAt"]);
+      print("this is time stamp" + user.CreatedAt.toString());
       return user;
     } catch (e) {
       Logger.PushLog(
@@ -215,7 +220,7 @@ class AccountController {
       var doc =
           FirebaseFirestore.instance.collection("UserTransactions").doc(Id);
       await doc.set(newJson);
-      Auditer.PushAudit(oldJson, newJson, "AccountController");
+      Auditer.PushAudit(oldJson, newJson, "UserTransactions");
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "DeleteTransaction");
       print(e);
@@ -297,7 +302,7 @@ class AccountController {
           .collection("UserContacts")
           .doc(friend.ContactReference);
       await doc.set(newJson);
-      Auditer.PushAudit(oldJson, newJson, "AccountController");
+      Auditer.PushAudit(oldJson, newJson, "UserContacts");
       return true;
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "DeleteFriend");
@@ -313,5 +318,28 @@ class AccountController {
       "createdAt": friend.createdAt,
       "updatedAt": friend.updatedAT,
     };
+  }
+
+  static UpdateUser(
+      {required AccountHolder OldData, required AccountHolder NewData}) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+      var Id = NewData.Email;
+      print("creating Jsons");
+      print(NewData.Email);
+      print(NewData.CreatedAt);
+      print(OldData.CreatedAt);
+      Map<String, dynamic> oldJson = GetAccountHolderJSON(OldData);
+      Map<String, dynamic> newJson = GetAccountHolderJSON(NewData);
+      print("Jsons created");
+      newJson["updatedAt"] = timestamp;
+      var doc = FirebaseFirestore.instance.collection("AccountHolder").doc(Id);
+      await doc.set(newJson);
+      print("User Updated");
+      Auditer.PushAudit(oldJson, newJson, "AccountHolder");
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "UpdateUser");
+      print(e);
+    }
   }
 }
