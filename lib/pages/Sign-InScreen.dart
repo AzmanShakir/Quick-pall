@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/pages/HomeScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '/utils/Validations.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
@@ -334,6 +335,12 @@ class _SignInScreenState extends State<SignInScreen> {
                               },
                             );
                           } else {
+                            if (_isCheckedRememberMe) {
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.setString('Email', user.Email);
+                              prefs.setString('Password', user.Password);
+                            }
                             Navigator.of(context).pop();
                             Get.offAll(
                                 HomeScreen(

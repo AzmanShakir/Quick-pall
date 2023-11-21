@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/main.dart';
+import 'package:quick_pall_local_repo/models/AccountHolder.dart';
+import 'package:quick_pall_local_repo/pages/HomeScreen.dart';
 import 'package:quick_pall_local_repo/pages/WalkThroughScreen.dart';
 import 'package:quick_pall_local_repo/pages/LetsGetStartedScreen.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -23,7 +26,26 @@ class _SplashScreenState extends State<SplashScreen> {
     Timer(Duration(seconds: 5), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       _hasSeenWalkthrough = prefs.getBool('hasSeenOnboarding') ?? false;
-      if (_hasSeenWalkthrough == true) {
+
+      String Email = prefs.getString('Email') ?? "null";
+      String Password = prefs.getString('Password') ?? "null";
+      if (Email != "null" && Password != "null") {
+        AccountHolder? user;
+        user = await AccountController.SignIn(Email, Password);
+        if (user == null) {
+          print("Some Error in Remeber me data");
+          Get.off(LetsGetStartedScreen(),
+              transition: Transition.rightToLeft,
+              duration: Duration(milliseconds: 500));
+        } else {
+          Get.offAll(
+              HomeScreen(
+                user: user,
+              ),
+              transition: Transition.rightToLeft,
+              duration: Duration(milliseconds: 500));
+        }
+      } else if (_hasSeenWalkthrough == true) {
         Get.off(LetsGetStartedScreen(),
             transition: Transition.rightToLeft,
             duration: Duration(milliseconds: 500));
