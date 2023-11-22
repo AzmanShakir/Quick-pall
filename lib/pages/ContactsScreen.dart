@@ -4,6 +4,7 @@ import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:get/get.dart';
 import 'package:quick_pall_local_repo/models/FriendsViewModel.dart';
+import 'package:quick_pall_local_repo/pages/AddContactScreen.dart';
 
 class ContactsScreen extends StatefulWidget {
   AccountHolder user;
@@ -64,43 +65,73 @@ class _ContactsScreenState extends State<ContactsScreen> {
         child: Column(
       children: [
         Center(
-          child: Container(
-              // height: 200,
-              width: 300,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 50,
-                  ),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(25.0),
-                      color: Colors.grey[100],
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.search,
-                          color: Colors.grey,
+          child: Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Container(
+                  // height: 200,
+                  width: 300,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 50,
+                      ),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25.0),
+                          color: Colors.grey[100],
                         ),
-                        SizedBox(width: 8.0),
-                        Expanded(
-                          child: TextField(
-                            controller: searchController,
-                            onChanged: (query) => filterFriendsList(query),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: 'Search...',
-                              hintStyle: TextStyle(color: Colors.grey),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.search,
+                              color: Colors.grey,
                             ),
-                          ),
+                            SizedBox(width: 8.0),
+                            Expanded(
+                              child: TextField(
+                                controller: searchController,
+                                onChanged: (query) => filterFriendsList(query),
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Search...',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              )),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 40.0, left: 10),
+                child: CircleAvatar(
+                  backgroundColor: Colors.green,
+                  child: IconButton(
+                      onPressed: () async {
+                        await Get.to(
+                            AddContactScreen(
+                              user: widget.user,
+                            ),
+                            transition: Transition.rightToLeft,
+                            duration: Duration(milliseconds: 500));
+                        setState(() {
+                          initListOfFriends();
+                        });
+                      },
+                      icon: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                      )),
+                ),
+              ),
+            ],
+          ),
         ),
         SizedBox(
           height: 30,

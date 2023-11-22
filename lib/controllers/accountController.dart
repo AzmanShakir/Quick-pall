@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:quick_pall_local_repo/models/AddFriendViewModel.dart';
 import 'package:quick_pall_local_repo/models/FriendsViewModel.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
 import '/models/AccountHolder.dart';
@@ -110,6 +111,56 @@ class AccountController {
       'createdAt': t.dateTime,
       'updatedAt': t.dateTime,
     };
+  }
+
+  static GetFriend(String UserEmail, String FriendEmail) async {
+    try {
+      Map<String, dynamic>? ContactsJSON =
+          await getDocumentIfItExists("Contacts", UserEmail);
+      if (ContactsJSON == null) return null;
+      var FriendArray = ContactsJSON!["FriendArray"];
+      for (DocumentReference element in FriendArray) {
+        final firestore = FirebaseFirestore.instance;
+        DocumentSnapshot ContactSnapShot = await element.get();
+        if (ContactSnapShot.exists) {
+          // Document exists, you can access its data
+          Map<String, dynamic> data =
+              ContactSnapShot.data() as Map<String, dynamic>;
+          var UserContact =
+              await getDocumentIfItExists("UserContacts", element.id);
+          if (UserContact!["FriendEmail"] == FriendEmail &&
+              UserContact!["IsActive"] == true) return element;
+        }
+      }
+      return null;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "GetFriend");
+      print(e);
+    }
+  }
+
+  static Future<AddFriendViewModel?> GetAccountHolderAsContact(
+      String UserEmail, String FriendEmail) async {
+    try {
+      Map<String, dynamic>? userJson =
+          await getDocumentIfItExists("AccountHolder", FriendEmail);
+      if (userJson == null) return null;
+      print("Friend Found");
+      DocumentReference? UserContactElement =
+          await GetFriend(UserEmail, FriendEmail);
+      print(UserContactElement);
+      AddFriendViewModel? user;
+      if (UserContactElement == null)
+        user = GetAddFriendViewModelFromJson(userJson, false);
+      else
+        user = GetAddFriendViewModelFromJson(userJson, true);
+      return user;
+    } catch (e) {
+      Logger.PushLog(
+          e.toString(), "AccountController", "GetAccountHolderAsContact");
+      print(e);
+      return null;
+    }
   }
 
   static Future<AccountHolder?> SignIn(email, password) async {
@@ -342,6 +393,133 @@ class AccountController {
       Logger.PushLog(e.toString(), "AccountController", "UpdateUser");
       print(e);
       return false;
+    }
+  }
+
+  static AddFriendViewModel? GetAddFriendViewModelFromJson(
+      Map<String, dynamic> userJson, bool isFriend) {
+    try {
+      AddFriendViewModel? user = null;
+      user = AddFriendViewModel(
+          Email: userJson["Email"].toString(),
+          Image: userJson["Image"].toString(),
+          Name: userJson["Name"].toString(),
+          IsAlreadyFriend: isFriend);
+      return user;
+    } catch (e) {
+      Logger.PushLog(
+          e.toString(), "AccountController", "GetAddFriendViewModelFromJson");
+      print(e);
+
+      return null;
+    }
+  }
+
+  static AddContact(String UserEmail, String FriendEmail) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      DocumentReference? ref =
+          await IsFriendAlreadyExist(UserEmail, FriendEmail);
+      if (ref != null) {
+        print(ref.id);
+        var oldDoc = await getDocumentIfItExists("UserContacts", ref.id);
+        var newDoc = deepCopyMap(oldDoc!);
+        newDoc!["IsActive"] = true;
+        newDoc!["updatedAt"] = timestamp;
+        var doc = await FirebaseFirestore.instance
+            .collection("UserContacts")
+            .doc(ref.id);
+        doc.set(newDoc);
+        Auditer.PushAudit(oldDoc, newDoc, "UserContacts");
+        return true;
+      } else {
+        var doc =
+            await FirebaseFirestore.instance.collection("UserContacts").doc();
+        Map<String, dynamic> json = {
+          "FriendEmail": FriendEmail,
+          "IsActive": true,
+          "createdAt": timestamp,
+          "updatedAt": timestamp
+        };
+        await doc.set(json);
+        await FirebaseFirestore.instance
+            .collection("Contacts")
+            .doc(UserEmail)
+            .update({
+          "FriendArray": FieldValue.arrayUnion([doc])
+        });
+        return true;
+      }
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "AddContact");
+      print(e);
+      return false;
+    }
+  }
+
+  static IsFriendAlreadyExist(String UserEmail, String FriendEmail) async {
+    try {
+      Map<String, dynamic>? ContactsJSON =
+          await getDocumentIfItExists("Contacts", UserEmail);
+      if (ContactsJSON == null) return null;
+      var FriendArray = ContactsJSON!["FriendArray"];
+      for (DocumentReference element in FriendArray) {
+        final firestore = FirebaseFirestore.instance;
+        DocumentSnapshot ContactSnapShot = await element.get();
+        if (ContactSnapShot.exists) {
+          // Document exists, you can access its data
+          Map<String, dynamic> data =
+              ContactSnapShot.data() as Map<String, dynamic>;
+          var UserContact =
+              await getDocumentIfItExists("UserContacts", element.id);
+          if (UserContact!["FriendEmail"] == FriendEmail) return element;
+        }
+      }
+      return null;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "IsFriendAlreadyExist");
+      print(e);
+    }
+  }
+
+  static Map<String, dynamic> deepCopyMap(Map<dynamic, dynamic> original) {
+    Map<String, dynamic> copy = {};
+
+    original.forEach((key, value) {
+      if (value is Map<dynamic, dynamic>) {
+        // If the value is a nested map, recursively copy it
+        copy[key.toString()] = deepCopyMap(value);
+      } else if (value is List) {
+        // If the value is a list, recursively copy each element
+        copy[key.toString()] = List.from(
+            value.map((item) => (item is Map) ? deepCopyMap(item) : item));
+      } else {
+        // Otherwise, copy the value directly
+        copy[key.toString()] = value;
+      }
+    });
+
+    return copy;
+  }
+
+  static DeleteContact(String UserEmail, String FriendEmail) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+      DocumentReference ref = await GetFriend(UserEmail, FriendEmail);
+      var oldDoc = await getDocumentIfItExists("UserContacts", ref.id);
+      var newDoc = deepCopyMap(oldDoc!);
+      newDoc!["IsActive"] = false;
+      newDoc!["updatedAt"] = timestamp;
+      await FirebaseFirestore.instance
+          .collection("UserContacts")
+          .doc(ref.id)
+          .set(newDoc);
+      Auditer.PushAudit(oldDoc, newDoc, "UserContacts");
+      return true;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "DeleteContact");
+      print(e);
     }
   }
 }
