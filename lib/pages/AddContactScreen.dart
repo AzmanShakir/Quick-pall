@@ -95,45 +95,19 @@ class _AddContactScreenState extends State<AddContactScreen> {
               Spacer(),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: Widget_ElevatedButton(
-                  text: "Search",
-                  textColor: Colors.black,
-                  backGroundColor: Colors.green,
-                  borderColor: Colors.white,
-                  callBack: () async {
-                    if (_formKey.currentState?.validate() ?? false) {
-                      _formKey.currentState?.save();
-                      // loading while async function exec
-                      showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: Container(
-                              height: 200,
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  CircularProgressIndicator(
-                                    color: Colors.green,
-                                  ),
-                                  SizedBox(height: 16.0),
-                                  Text("Searching..."),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                      AddFriendViewModel? friend =
-                          await AccountController.GetAccountHolderAsContact(
-                              widget.user.Email, _EmailController.text);
-                      if (friend == null) {
-                        Navigator.of(context).pop();
+                child: SizedBox(
+                  width: 300,
+                  child: Widget_ElevatedButton(
+                    text: "Search",
+                    textColor: Colors.black,
+                    backGroundColor: Colors.green,
+                    borderColor: Colors.white,
+                    callBack: () async {
+                      if (_formKey.currentState?.validate() ?? false) {
+                        _formKey.currentState?.save();
+                        // loading while async function exec
                         showDialog(
-                          // barrierDismissible: false,
+                          barrierDismissible: false,
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
@@ -144,36 +118,66 @@ class _AddContactScreenState extends State<AddContactScreen> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    CircleAvatar(
-                                        backgroundColor: Colors.red,
-                                        radius: 80,
-                                        child: Icon(
-                                          Icons.close,
-                                          color: Colors.black,
-                                          size: 70,
-                                        )),
+                                    CircularProgressIndicator(
+                                      color: Colors.green,
+                                    ),
                                     SizedBox(height: 16.0),
-                                    Text("Account Holder not found"),
+                                    Text("Searching..."),
                                   ],
                                 ),
                               ),
                             );
                           },
                         );
-                      } else if (friend != null &&
-                          friend is AddFriendViewModel) {
-                        Navigator.of(context).pop();
+                        AddFriendViewModel? friend =
+                            await AccountController.GetAccountHolderAsContact(
+                                widget.user.Email, _EmailController.text);
+                        if (friend == null) {
+                          Navigator.of(context).pop();
+                          showDialog(
+                            // barrierDismissible: false,
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Container(
+                                  height: 200,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                          backgroundColor: Colors.red,
+                                          radius: 80,
+                                          child: Icon(
+                                            Icons.close,
+                                            color: Colors.black,
+                                            size: 70,
+                                          )),
+                                      SizedBox(height: 16.0),
+                                      Text("Account Holder not found"),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } else if (friend != null &&
+                            friend is AddFriendViewModel) {
+                          Navigator.of(context).pop();
 
-                        Get.to(
-                            SearchContactScreen(
-                              user: widget.user,
-                              friend: friend,
-                            ),
-                            transition: Transition.rightToLeft,
-                            duration: Duration(milliseconds: 500));
+                          Get.to(
+                              SearchContactScreen(
+                                user: widget.user,
+                                friend: friend,
+                              ),
+                              transition: Transition.rightToLeft,
+                              duration: Duration(milliseconds: 500));
+                        }
                       }
-                    }
-                  },
+                    },
+                  ),
                 ),
               )
             ],

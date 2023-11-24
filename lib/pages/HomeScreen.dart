@@ -3,6 +3,7 @@ import 'package:quick_pall_local_repo/Controllers/accountController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/pages/AccountScreen.dart';
 import 'package:quick_pall_local_repo/pages/ContactsScreen.dart';
+import 'package:quick_pall_local_repo/pages/SendMoneyScreen.dart';
 import 'package:quick_pall_local_repo/pages/Sign-InScreen.dart';
 import 'package:quick_pall_local_repo/pages/TransactionViewScreen.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
@@ -175,7 +176,11 @@ class _HomeState extends State<Home> {
                           radius: 25,
                           backgroundColor: Colors.transparent,
                           child: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(SendMoneyScreen(user: widget.user),
+                                    transition: Transition.rightToLeft,
+                                    duration: Duration(milliseconds: 500));
+                              },
                               icon: Icon(
                                 Icons.send_outlined,
                                 color: Colors.black,

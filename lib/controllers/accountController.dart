@@ -243,7 +243,7 @@ class AccountController {
             );
             if (t.transactionType == "Sent") {
               t.Money = "-" + t.Money;
-            } else if (t.transactionType == "Sent") {
+            } else if (t.transactionType == "Recieve") {
               t.Money = "+" + t.Money;
             }
             lst.add(t);
@@ -331,6 +331,8 @@ class AccountController {
       //       Image: "FriendData![]",
       //       Email: "FriendData![]",
       //       Name: letter,
+      //       createdAt: DateTime.now(),
+      //       updatedAT: DateTime.now(),
       //       Tag: letter);
       //   lst.add(t);
       // }
@@ -520,6 +522,83 @@ class AccountController {
     } catch (e) {
       Logger.PushLog(e.toString(), "AccountController", "DeleteContact");
       print(e);
+    }
+  }
+
+  static SendMoney(
+      {required String SenderEmail,
+      required String RecieverEmail,
+      required String reason,
+      required String amountToSend}) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      // Add sent transactions for sender
+      var SendDoc =
+          await FirebaseFirestore.instance.collection("UserTransactions").doc();
+      Map<String, dynamic> SendJson = {
+        "FriendId": RecieverEmail,
+        "IsActive": true,
+        "Amount": amountToSend,
+        "Reason": reason,
+        "TransactionType": "Sent",
+        "createdAt": timestamp,
+        "updatedAt": timestamp
+      };
+      await SendDoc.set(SendJson);
+      await FirebaseFirestore.instance
+          .collection("Transactions")
+          .doc(SenderEmail)
+          .set({
+        "TransactionArray": FieldValue.arrayUnion([SendDoc])
+      }, SetOptions(merge: true));
+      //Update Sender
+      Map<String, dynamic>? sJson =
+          await getDocumentIfItExists("AccountHolder", SenderEmail);
+      if (sJson != null) {
+        AccountHolder? sObjectOld = GetAccountHolderFromJson(sJson);
+        AccountHolder? sObjectNew = GetAccountHolderFromJson(sJson);
+        if (sObjectNew != null && sObjectOld != null) {
+          sObjectNew.Money = sObjectNew.Money - int.parse(amountToSend);
+          UpdateUser(OldData: sObjectOld, NewData: sObjectNew);
+        }
+      }
+      // Add Recieve transactions for Reciever
+      var RecieveDoc =
+          await FirebaseFirestore.instance.collection("UserTransactions").doc();
+      Map<String, dynamic> RecieveJson = {
+        "FriendId": SenderEmail,
+        "IsActive": true,
+        "Amount": amountToSend,
+        "Reason": reason,
+        "TransactionType": "Recieve",
+        "createdAt": timestamp,
+        "updatedAt": timestamp
+      };
+      await RecieveDoc.set(RecieveJson);
+      await FirebaseFirestore.instance
+          .collection("Transactions")
+          .doc(RecieverEmail)
+          .set({
+        "TransactionArray": FieldValue.arrayUnion([RecieveDoc])
+      }, SetOptions(merge: true));
+
+      //Update Reciever
+      Map<String, dynamic>? rJson =
+          await getDocumentIfItExists("AccountHolder", RecieverEmail);
+      if (rJson != null) {
+        AccountHolder? rObjectOld = GetAccountHolderFromJson(rJson);
+        AccountHolder? rObjectNew = GetAccountHolderFromJson(rJson);
+        if (rObjectNew != null && rObjectOld != null) {
+          rObjectNew.Money = rObjectNew.Money + int.parse(amountToSend);
+          UpdateUser(OldData: rObjectOld, NewData: rObjectNew);
+        }
+      }
+      return true;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "AccountController", "SendMoney");
+      print(e);
+      return false;
     }
   }
 }

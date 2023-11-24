@@ -23,4 +23,14 @@ class Validations {
     }
     return false;
   }
+
+  static bool isValidAmountToSend(String v) {
+    return RegExp(r'^[0-9]+$').hasMatch(v);
+  }
+
+  static bool isHaveEnoughBalance(
+      {required String amountToSend, required int userBalance}) {
+    if (int.parse(amountToSend) <= userBalance) return true;
+    return false;
+  }
 }
