@@ -2,6 +2,8 @@ import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
+import 'package:quick_pall_local_repo/controllers/contactController.dart';
+import 'package:quick_pall_local_repo/controllers/notificationController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/models/AddFriendViewModel.dart';
 import 'package:get/get.dart';
@@ -117,7 +119,12 @@ class _SearchContactScreenState extends State<SearchContactScreen> {
                                 );
                               },
                             );
-                            bool status = await AccountController.AddContact(
+                            // bool status = await ContactController.AddContact(
+                            //   widget.user.Email,
+                            //   widget.friend.Email,
+                            // );
+                            bool status = await NotificationController
+                                .SendFriendRequestNotification(
                               widget.user.Email,
                               widget.friend.Email,
                             );
@@ -194,7 +201,7 @@ class _SearchContactScreenState extends State<SearchContactScreen> {
                                 );
                               },
                             );
-                            bool status = await AccountController.DeleteContact(
+                            bool status = await ContactController.DeleteContact(
                               widget.user.Email,
                               widget.friend.Email,
                             );

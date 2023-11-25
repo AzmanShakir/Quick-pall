@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/Controllers/accountController.dart';
+import 'package:quick_pall_local_repo/controllers/transactionController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/pages/AccountScreen.dart';
 import 'package:quick_pall_local_repo/pages/ContactsScreen.dart';
+import 'package:quick_pall_local_repo/pages/NotificationsScreen.dart';
 import 'package:quick_pall_local_repo/pages/SendMoneyScreen.dart';
 import 'package:quick_pall_local_repo/pages/Sign-InScreen.dart';
 import 'package:quick_pall_local_repo/pages/TransactionViewScreen.dart';
@@ -64,7 +66,11 @@ class _HomeScreen extends State<HomeScreen> {
           actions: [
             IconButton(
                 iconSize: 30,
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(NotificationScreen(user: widget.user),
+                      transition: Transition.rightToLeft,
+                      duration: Duration(milliseconds: 500));
+                },
                 icon: Icon(
                   Icons.notifications_on_outlined,
                   color: Colors.black,
@@ -370,7 +376,7 @@ class _HomeState extends State<Home> {
   }
 
   void setTransactionList() async {
-    var x = await AccountController.GetTransactionsList(widget.user.Email);
+    var x = await TransactionController.GetTransactionsList(widget.user.Email);
     print(x);
     if (x != null && x is List<TransactionsViewModel>) {
       _transactionsList = x;

@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
+import 'package:quick_pall_local_repo/controllers/contactController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/models/AddFriendViewModel.dart';
 import 'package:quick_pall_local_repo/pages/SearchContactScreen.dart';
@@ -130,7 +131,7 @@ class _AddContactScreenState extends State<AddContactScreen> {
                           },
                         );
                         AddFriendViewModel? friend =
-                            await AccountController.GetAccountHolderAsContact(
+                            await ContactController.GetAccountHolderAsContact(
                                 widget.user.Email, _EmailController.text);
                         if (friend == null) {
                           Navigator.of(context).pop();

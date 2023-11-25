@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:quick_pall_local_repo/Controllers/accountController.dart';
+import 'package:quick_pall_local_repo/controllers/transactionController.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
 import 'package:quick_pall_local_repo/widgets/Buttons.dart';
 
@@ -204,7 +205,7 @@ class TransactionViewScreen extends StatelessWidget {
                             borderColor: Colors.white,
                             textColor: Colors.black,
                             callBack: () {
-                              AccountController.DeleteTransaction(
+                              TransactionController.DeleteTransaction(
                                   model.TransactionReference, model);
                               Get.back();
                             }),
