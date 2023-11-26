@@ -4,6 +4,7 @@ import 'package:quick_pall_local_repo/controllers/transactionController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/pages/AccountScreen.dart';
 import 'package:quick_pall_local_repo/pages/ContactsScreen.dart';
+import 'package:quick_pall_local_repo/pages/MoneyRequestScreen.dart';
 import 'package:quick_pall_local_repo/pages/NotificationsScreen.dart';
 import 'package:quick_pall_local_repo/pages/SendMoneyScreen.dart';
 import 'package:quick_pall_local_repo/pages/Sign-InScreen.dart';
@@ -217,7 +218,11 @@ class _HomeState extends State<Home> {
                           radius: 25,
                           backgroundColor: Colors.transparent,
                           child: IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(MoneyRequestScreen(user: widget.user),
+                                    transition: Transition.rightToLeft,
+                                    duration: Duration(milliseconds: 500));
+                              },
                               icon: Icon(
                                 Icons.download_outlined,
                                 color: Colors.black,
@@ -376,9 +381,12 @@ class _HomeState extends State<Home> {
   }
 
   void setTransactionList() async {
-    var x = await TransactionController.GetTransactionsList(widget.user.Email);
+    List<TransactionsViewModel>? x =
+        await TransactionController.GetTransactionsList(widget.user.Email);
     print(x);
     if (x != null && x is List<TransactionsViewModel>) {
+      x.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+
       _transactionsList = x;
     }
     print("setStateAzan");

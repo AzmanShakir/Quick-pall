@@ -4,6 +4,7 @@ import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/controllers/notificationController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:get/get.dart';
+import 'package:quick_pall_local_repo/models/NotificationViewModel.dart';
 import 'package:quick_pall_local_repo/pages/RespondToFriendRequest.dart';
 import 'package:quick_pall_local_repo/pages/RespondToMoneyRequest.dart';
 
@@ -34,14 +35,14 @@ class _NotificationScreenState extends State<NotificationScreen> {
   }
 
   void initListOfNotifications() async {
-    var f =
+    List<NotificationViewModel> f =
         await NotificationController.GetAllNotifications(widget.user.Email) ??
             [];
 
     if (f.isNotEmpty) {
       // Sort by DateTime field createdAt
-      // f.sort((a, b) => a.createdAt.compareTo(b.createdAt));
-      // Notifications = f;
+      f.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      Notifications = f;
       // print(friends[0].Name);
     }
 
@@ -110,6 +111,19 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                               "Sent a friend request") {
                                             Get.to(
                                                 RespondToFriendRequest(
+                                                  user: widget.user,
+                                                  notification:
+                                                      Notifications[index],
+                                                ),
+                                                transition:
+                                                    Transition.rightToLeft,
+                                                duration: Duration(
+                                                    milliseconds: 500));
+                                          } else if (Notifications[index]
+                                                  .NotificationType ==
+                                              "Requested") {
+                                            Get.to(
+                                                ResponfToMoneyRequest(
                                                   user: widget.user,
                                                   notification:
                                                       Notifications[index],
@@ -202,6 +216,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           "Sent a friend request") {
                                         Get.to(
                                             RespondToFriendRequest(
+                                              user: widget.user,
+                                              notification:
+                                                  Notifications[index],
+                                            ),
+                                            transition: Transition.rightToLeft,
+                                            duration:
+                                                Duration(milliseconds: 500));
+                                      } else if (Notifications[index]
+                                              .NotificationType ==
+                                          "Requested") {
+                                        Get.to(
+                                            ResponfToMoneyRequest(
                                               user: widget.user,
                                               notification:
                                                   Notifications[index],

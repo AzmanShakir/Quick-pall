@@ -191,7 +191,7 @@ class NotificationController {
       Map<String, dynamic> NotificationJson = {
         "FromEmail": senderEmail,
         "IsActive": true,
-        "NotificationType": "Sent",
+        "NotificationType": "Recieve",
         "IsClicked": false,
         "IsResponded": false,
         "Amount": amount,
@@ -211,6 +211,45 @@ class NotificationController {
     } catch (e) {
       Logger.PushLog(
           e.toString(), "NotificationController", "MoneySentNotification");
+      print(e);
+      return false;
+    }
+  }
+
+  static SendMoneyRequest(
+      {required String senderEmail,
+      required String recieverEmail,
+      required String requestedAmount}) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      var RequestDoc = await FirebaseFirestore.instance
+          .collection("UserNotifications")
+          .doc();
+
+      Map<String, dynamic> NotificationJson = {
+        "FromEmail": senderEmail,
+        "IsActive": true,
+        "NotificationType": "Requested",
+        "IsClicked": false,
+        "IsResponded": false,
+        "Amount": requestedAmount,
+        "createdAt": timestamp,
+        "updatedAt": timestamp
+      };
+
+      await RequestDoc.set(NotificationJson);
+
+      await FirebaseFirestore.instance
+          .collection("Notifications")
+          .doc(recieverEmail)
+          .set({
+        "NotificationArray": FieldValue.arrayUnion([RequestDoc])
+      }, SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      Logger.PushLog(
+          e.toString(), "NotificationController", "SendMoneyRequest");
       print(e);
       return false;
     }
