@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/controllers/contactController.dart';
+import 'package:quick_pall_local_repo/controllers/notificationController.dart';
 import 'package:quick_pall_local_repo/controllers/transactionController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:get/get.dart';
@@ -673,6 +674,15 @@ class _SendNowState extends State<SendNow> {
                                                                     .text,
                                                             amountToSend: widget
                                                                 .amountToSend);
+
+                                                await NotificationController
+                                                    .MoneySentNotification(
+                                                        senderEmail:
+                                                            widget.user.Email,
+                                                        recieverEmail:
+                                                            widget.friend.Email,
+                                                        amount: widget
+                                                            .amountToSend);
                                                 if (status == false) {
                                                   Navigator.of(context).pop();
                                                   showDialog(

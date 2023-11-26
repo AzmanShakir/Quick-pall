@@ -168,7 +168,8 @@ class ContactController {
     }
   }
 
-  static AddContact(String UserEmail, String FriendEmail) async {
+  static Future<bool> AddUserContact(
+      String UserEmail, String FriendEmail) async {
     try {
       final timestamp = FieldValue.serverTimestamp();
 
@@ -196,14 +197,50 @@ class ContactController {
           "updatedAt": timestamp
         };
         await doc.set(json);
-        await FirebaseFirestore.instance
-            .collection("Contacts")
-            .doc(UserEmail)
-            .update({
-          "FriendArray": FieldValue.arrayUnion([doc])
-        });
+        // var c = await FirebaseFirestore.instance
+        //     .collection("Contacts")
+        //     .doc(UserEmail);
+        // await c.update({
+        //   "FriendArray": FieldValue.arrayUnion([doc])
+        // });
+        var documentReference =
+            FirebaseFirestore.instance.collection("Contacts").doc(UserEmail);
+
+// Check if the document exists
+        var documentSnapshot = await documentReference.get();
+
+        if (documentSnapshot.exists) {
+          // Document exists, update it
+          await documentReference.update({
+            "FriendArray": FieldValue.arrayUnion([doc])
+          });
+        } else {
+          // Document doesn't exist, create it
+          await documentReference.set({
+            "FriendArray": [doc]
+            // Add other fields as needed
+          });
+        }
+
         return true;
       }
+    } catch (e) {
+      Logger.PushLog(e.toString(), "ContactControllerr", "AddUserContact");
+      print(e);
+      return false;
+    }
+  }
+
+  static Future<bool> AddContact(String UserEmail, String FriendEmail) async {
+    try {
+      // add in user friend list
+      bool isCompleted = await AddUserContact(UserEmail, FriendEmail);
+      // add in friend's friend list
+      bool isCompleted2 = await AddUserContact(FriendEmail, UserEmail);
+      if (isCompleted2 && isCompleted)
+        return true;
+      else
+        return false;
     } catch (e) {
       Logger.PushLog(e.toString(), "ContactControllerr", "AddContact");
       print(e);
@@ -226,9 +263,11 @@ class ContactController {
               ContactSnapShot.data() as Map<String, dynamic>;
           var UserContact =
               await getDocumentIfItExists("UserContacts", element.id);
+          print(element);
           if (UserContact!["FriendEmail"] == FriendEmail) return element;
         }
       }
+      print("null");
       return null;
     } catch (e) {
       Logger.PushLog(e.toString(), "ContactController", "IsFriendAlreadyExist");
@@ -258,6 +297,22 @@ class ContactController {
 
   static DeleteContact(String UserEmail, String FriendEmail) async {
     try {
+      // add in user friend list
+      bool isCompleted = await DeleteUserContact(UserEmail, FriendEmail);
+      // add in friend's friend list
+      bool isCompleted2 = await DeleteUserContact(FriendEmail, UserEmail);
+      if (isCompleted2 && isCompleted)
+        return true;
+      else
+        return false;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "ContactController", "DeleteContact");
+      return false;
+    }
+  }
+
+  static DeleteUserContact(String UserEmail, String FriendEmail) async {
+    try {
       final timestamp = FieldValue.serverTimestamp();
       DocumentReference ref = await GetFriend(UserEmail, FriendEmail);
       var oldDoc = await getDocumentIfItExists("UserContacts", ref.id);
@@ -271,7 +326,7 @@ class ContactController {
       Auditer.PushAudit(oldDoc, newDoc, "UserContacts");
       return true;
     } catch (e) {
-      Logger.PushLog(e.toString(), "ContactController", "DeleteContact");
+      Logger.PushLog(e.toString(), "ContactController", "DeleteUserContact");
       print(e);
     }
   }

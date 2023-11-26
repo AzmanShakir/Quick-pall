@@ -17,6 +17,7 @@ class NotificationController {
         "IsActive": true,
         "NotificationType": "Sent a friend request",
         "IsClicked": false,
+        "IsResponded": false,
         "Amount": "",
         "createdAt": timestamp,
         "updatedAt": timestamp
@@ -92,6 +93,7 @@ class NotificationController {
                 createdAt: data["createdAt"].toDate(),
                 updatedAt: data["updatedAt"].toDate(),
                 IsClicked: data["IsClicked"],
+                IsResponded: data["IsResponded"],
                 NotificationType: data["NotificationType"]);
             lst.add(t);
           }
@@ -116,6 +118,7 @@ class NotificationController {
       'Image': n.Image,
       'IsActive': n.IsActive,
       'IsClicked': n.IsClicked,
+      'IsResponded': n.IsResponded,
       'Name': n.Name,
       'NotificationType': n.NotificationType,
       'createdAt': n.createdAt, // Convert DateTime to String
@@ -172,5 +175,44 @@ class NotificationController {
     });
 
     return copy;
+  }
+
+  static MoneySentNotification(
+      {required String senderEmail,
+      required String recieverEmail,
+      required String amount}) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      var RequestDoc = await FirebaseFirestore.instance
+          .collection("UserNotifications")
+          .doc();
+
+      Map<String, dynamic> NotificationJson = {
+        "FromEmail": senderEmail,
+        "IsActive": true,
+        "NotificationType": "Sent",
+        "IsClicked": false,
+        "IsResponded": false,
+        "Amount": amount,
+        "createdAt": timestamp,
+        "updatedAt": timestamp
+      };
+
+      await RequestDoc.set(NotificationJson);
+
+      await FirebaseFirestore.instance
+          .collection("Notifications")
+          .doc(recieverEmail)
+          .set({
+        "NotificationArray": FieldValue.arrayUnion([RequestDoc])
+      }, SetOptions(merge: true));
+      return true;
+    } catch (e) {
+      Logger.PushLog(
+          e.toString(), "NotificationController", "MoneySentNotification");
+      print(e);
+      return false;
+    }
   }
 }

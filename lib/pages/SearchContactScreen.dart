@@ -232,7 +232,7 @@ class _SearchContactScreenState extends State<SearchContactScreen> {
                                               )),
                                           SizedBox(height: 16.0),
                                           Text(
-                                              "Cannot add contact. Contact Developer"),
+                                              "Cannot delete contact. Contact Developer"),
                                         ],
                                       ),
                                     ),

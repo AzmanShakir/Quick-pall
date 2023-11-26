@@ -9,7 +9,8 @@ class NotificationViewModel {
       required this.createdAt,
       required this.updatedAt,
       required this.Image,
-      required this.Name});
+      required this.Name,
+      required this.IsResponded});
   NotificationViewModel.copy(NotificationViewModel n)
       : this.Id = n.Id,
         this.Amount = n.Amount,
@@ -20,7 +21,8 @@ class NotificationViewModel {
         this.Name = n.Name,
         this.NotificationType = n.NotificationType,
         this.createdAt = n.createdAt,
-        this.updatedAt = n.updatedAt;
+        this.updatedAt = n.updatedAt,
+        this.IsResponded = n.IsResponded;
 
   String Id;
   String FromEmail;
@@ -32,4 +34,5 @@ class NotificationViewModel {
   String Amount;
   DateTime createdAt;
   DateTime updatedAt;
+  bool IsResponded;
 }

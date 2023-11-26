@@ -4,6 +4,8 @@ import 'package:quick_pall_local_repo/controllers/accountController.dart';
 import 'package:quick_pall_local_repo/controllers/notificationController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:get/get.dart';
+import 'package:quick_pall_local_repo/pages/RespondToFriendRequest.dart';
+import 'package:quick_pall_local_repo/pages/RespondToMoneyRequest.dart';
 
 class NotificationScreen extends StatefulWidget {
   AccountHolder user;
@@ -100,6 +102,23 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           await NotificationController
                                               .SetNotificationClicked(
                                                   Notifications[index]);
+                                          setState(() {
+                                            initListOfNotifications();
+                                          });
+                                          if (Notifications[index]
+                                                  .NotificationType ==
+                                              "Sent a friend request") {
+                                            Get.to(
+                                                RespondToFriendRequest(
+                                                  user: widget.user,
+                                                  notification:
+                                                      Notifications[index],
+                                                ),
+                                                transition:
+                                                    Transition.rightToLeft,
+                                                duration: Duration(
+                                                    milliseconds: 500));
+                                          }
                                         },
                                         child: Dismissible(
                                           key: Key(Notifications[index]
@@ -176,65 +195,84 @@ class _NotificationScreenState extends State<NotificationScreen> {
                               : Padding(
                                   padding: const EdgeInsets.only(
                                       top: 10.0, bottom: 10.0),
-                                  child: Dismissible(
-                                    key: Key(Notifications[index]
-                                        .Id), // Provide a unique key for each item
-                                    onDismissed: (direction) {
-                                      // Handle the item dismissal (e.g., remove the item from the list)
-                                      Notifications.DeleteNotification(
-                                          Notifications[index]);
-                                      setState(() {
-                                        Notifications.removeAt(index);
-                                      });
+                                  child: InkWell(
+                                    onTap: () async {
+                                      if (Notifications[index]
+                                              .NotificationType ==
+                                          "Sent a friend request") {
+                                        Get.to(
+                                            RespondToFriendRequest(
+                                              user: widget.user,
+                                              notification:
+                                                  Notifications[index],
+                                            ),
+                                            transition: Transition.rightToLeft,
+                                            duration:
+                                                Duration(milliseconds: 500));
+                                      }
                                     },
-                                    background: Container(
-                                      color: Colors.red,
-                                      alignment: Alignment.centerRight,
-                                      padding: EdgeInsets.only(right: 16.0),
-                                      child: Icon(
-                                        Icons.delete,
-                                        color: Colors.white,
+                                    child: Dismissible(
+                                      key: Key(Notifications[index]
+                                          .Id), // Provide a unique key for each item
+                                      onDismissed: (direction) {
+                                        // Handle the item dismissal (e.g., remove the item from the list)
+                                        Notifications.DeleteNotification(
+                                            Notifications[index]);
+                                        setState(() {
+                                          Notifications.removeAt(index);
+                                        });
+                                      },
+                                      background: Container(
+                                        color: Colors.red,
+                                        alignment: Alignment.centerRight,
+                                        padding: EdgeInsets.only(right: 16.0),
+                                        child: Icon(
+                                          Icons.delete,
+                                          color: Colors.white,
+                                        ),
                                       ),
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 30,
-                                            backgroundImage: NetworkImage(
-                                                Notifications[index].Image),
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                Notifications[index].Name,
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 16),
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              Text(Notifications[index]
-                                                      .NotificationType +
-                                                  " " +
-                                                  Notifications[index].Amount),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              Text(DateFormat("yyyy-MM-dd")
-                                                  .format(Notifications[index]
-                                                      .createdAt)
-                                                  .toString())
-                                            ],
-                                          ),
-                                        ],
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            CircleAvatar(
+                                              radius: 30,
+                                              backgroundImage: NetworkImage(
+                                                  Notifications[index].Image),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  Notifications[index].Name,
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 16),
+                                                ),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(Notifications[index]
+                                                        .NotificationType +
+                                                    " " +
+                                                    Notifications[index]
+                                                        .Amount),
+                                                SizedBox(
+                                                  height: 5,
+                                                ),
+                                                Text(DateFormat("yyyy-MM-dd")
+                                                    .format(Notifications[index]
+                                                        .createdAt)
+                                                    .toString())
+                                              ],
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
