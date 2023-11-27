@@ -254,4 +254,24 @@ class NotificationController {
       return false;
     }
   }
+
+  static DeleteNotification(NotificationViewModel notification) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      Map<String, dynamic> oldJson = GetNotificationJSON(notification);
+      Map<String, dynamic> newJson = GetNotificationJSON(notification);
+      newJson["IsActive"] = false;
+      newJson["updatedAt"] = timestamp;
+      var doc = FirebaseFirestore.instance
+          .collection("UserNotifications")
+          .doc(notification.Id);
+      await doc.set(newJson);
+      Auditer.PushAudit(oldJson, newJson, "UserNotifications");
+    } catch (e) {
+      Logger.PushLog(
+          e.toString(), "NotificationController", "DeleteNotification");
+      print(e);
+    }
+  }
 }

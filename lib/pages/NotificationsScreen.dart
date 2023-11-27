@@ -139,8 +139,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                               .Id), // Provide a unique key for each item
                                           onDismissed: (direction) {
                                             // Handle the item dismissal (e.g., remove the item from the list)
-                                            Notifications.DeleteNotification(
-                                                Notifications[index]);
+                                            NotificationController
+                                                .DeleteNotification(
+                                                    Notifications[index]);
                                             setState(() {
                                               Notifications.removeAt(index);
                                             });
@@ -242,8 +243,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                                           .Id), // Provide a unique key for each item
                                       onDismissed: (direction) {
                                         // Handle the item dismissal (e.g., remove the item from the list)
-                                        Notifications.DeleteNotification(
-                                            Notifications[index]);
+                                        NotificationController
+                                            .DeleteNotification(
+                                                Notifications[index]);
                                         setState(() {
                                           Notifications.removeAt(index);
                                         });
