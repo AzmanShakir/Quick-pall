@@ -40,29 +40,51 @@ class TransactionController {
           // Document exists, you can access its data
           Map<String, dynamic> data =
               transactionSnapShot.data() as Map<String, dynamic>;
-          var friendDoc =
-              await getDocumentIfItExists("AccountHolder", data["FriendId"]);
-          if (data["IsActive"] == true) {
-            TransactionsViewModel t = TransactionsViewModel(
-              TransactionReference: element.id,
-              Reason: data["Reason"],
-              Image: friendDoc!["Image"],
-              Email: friendDoc!["Email"],
-              Money: data["Amount"],
-              IsActive: data["IsActive"],
-              Name: friendDoc!["Name"],
-              dateTime: data["createdAt"].toDate(),
-              transactionType: data["TransactionType"],
-            );
-            if (t.transactionType == "Sent") {
-              t.Money = "-" + t.Money;
-            } else if (t.transactionType == "Recieve") {
-              t.Money = "+" + t.Money;
+          if (data["FriendId"] != "Admin") {
+            var friendDoc =
+                await getDocumentIfItExists("AccountHolder", data["FriendId"]);
+            if (data["IsActive"] == true) {
+              TransactionsViewModel t = TransactionsViewModel(
+                TransactionReference: element.id,
+                Reason: data["Reason"],
+                Image: friendDoc!["Image"],
+                Email: friendDoc!["Email"],
+                Money: data["Amount"],
+                IsActive: data["IsActive"],
+                Name: friendDoc!["Name"],
+                dateTime: data["createdAt"].toDate(),
+                transactionType: data["TransactionType"],
+              );
+              if (t.transactionType == "Sent" ||
+                  t.transactionType == "Withdraw") {
+                t.Money = "-" + t.Money;
+              } else if (t.transactionType == "Recieve") {
+                t.Money = "+" + t.Money;
+              }
+              lst.add(t);
             }
-            lst.add(t);
+          } else {
+            if (data["IsActive"] == true) {
+              TransactionsViewModel t = TransactionsViewModel(
+                TransactionReference: element.id,
+                Reason: data["Reason"],
+                Image:
+                    "https://firebasestorage.googleapis.com/v0/b/quickpall.appspot.com/o/images%2Flogo.png?alt=media&token=75b49929-5231-4eb6-b6a3-7adf2978131c",
+                Email: "Admin",
+                Money: data["Amount"],
+                IsActive: data["IsActive"],
+                Name: "Admin",
+                dateTime: data["createdAt"].toDate(),
+                transactionType: data["TransactionType"],
+              );
+              if (t.transactionType == "Sent") {
+                t.Money = "-" + t.Money;
+              } else if (t.transactionType == "Recieve") {
+                t.Money = "+" + t.Money;
+              }
+              lst.add(t);
+            }
           }
-        } else {
-          print('Transaction does not exist');
         }
       }
       return lst;
@@ -190,6 +212,57 @@ class TransactionController {
       return true;
     } catch (e) {
       Logger.PushLog(e.toString(), "TransactionController", "SendMoney");
+      print(e);
+      return false;
+    }
+  }
+
+  static MakeTransaction(
+      {required String RecieverEmail,
+      required String SenderEmail,
+      required String TransactionType,
+      required Amount,
+      required String Reason}) async {
+    try {
+      final timestamp = FieldValue.serverTimestamp();
+
+      // Add Recieve transactions for Reciever
+      var RecieveDoc =
+          await FirebaseFirestore.instance.collection("UserTransactions").doc();
+      Map<String, dynamic> RecieveJson = {
+        "FriendId": SenderEmail,
+        "IsActive": true,
+        "Amount": Amount,
+        "Reason": Reason,
+        "TransactionType": TransactionType,
+        "createdAt": timestamp,
+        "updatedAt": timestamp
+      };
+      await RecieveDoc.set(RecieveJson);
+      await FirebaseFirestore.instance
+          .collection("Transactions")
+          .doc(RecieverEmail)
+          .set({
+        "TransactionArray": FieldValue.arrayUnion([RecieveDoc])
+      }, SetOptions(merge: true));
+
+      //Update Reciever
+      Map<String, dynamic>? rJson =
+          await getDocumentIfItExists("AccountHolder", RecieverEmail);
+      if (rJson != null) {
+        AccountHolder? rObjectOld =
+            AccountController.GetAccountHolderFromJson(rJson);
+        AccountHolder? rObjectNew =
+            AccountController.GetAccountHolderFromJson(rJson);
+        if (rObjectNew != null && rObjectOld != null) {
+          rObjectNew.Money = rObjectNew.Money - int.parse(Amount);
+          AccountController.UpdateUser(
+              OldData: rObjectOld, NewData: rObjectNew);
+        }
+      }
+      return true;
+    } catch (e) {
+      Logger.PushLog(e.toString(), "TransactionController", "MakeTransaction");
       print(e);
       return false;
     }

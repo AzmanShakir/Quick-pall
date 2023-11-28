@@ -4,6 +4,7 @@ import 'package:email_auth/email_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:quick_pall_local_repo/controllers/countryController.dart';
+import 'package:quick_pall_local_repo/pages/HomeScreen.dart';
 import '/utils/Validations.dart';
 import '/Controllers/accountController.dart';
 import '/utils/Toast.dart';
@@ -863,6 +864,7 @@ class SignUp_OTP_Verification extends StatefulWidget {
     int max = 999999;
     int randomInteger = min + random.nextInt(max - min + 1);
     otp = randomInteger.toString();
+    print(otp);
     sendOtpEmail(email, otp); // Call the sendOTP method in the constructor.
   }
 
@@ -1106,15 +1108,26 @@ class _SignUp_OTP_VerificationState extends State<SignUp_OTP_Verification> {
                                                                   borderColor:
                                                                       Colors
                                                                           .white,
-                                                                  callBack: () {
+                                                                  callBack:
+                                                                      () async {
                                                                     Navigator.of(
                                                                             context)
                                                                         .pop();
-                                                                    // Get.off(
-                                                                    // SignUp_NameScreen(
-                                                                    //     email: _email, password: _password),
-                                                                    // transition: Transition.rightToLeft,
-                                                                    // duration: Duration(milliseconds: 500));
+                                                                    AccountHolder?
+                                                                        user =
+                                                                        await AccountController.SignIn(
+                                                                            widget.email,
+                                                                            widget.password);
+                                                                    Get.off(
+                                                                        HomeScreen(
+                                                                          user:
+                                                                              user!,
+                                                                        ),
+                                                                        transition:
+                                                                            Transition
+                                                                                .rightToLeft,
+                                                                        duration:
+                                                                            Duration(milliseconds: 500));
                                                                   },
                                                                 ))
                                                           ],

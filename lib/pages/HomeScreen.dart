@@ -9,6 +9,7 @@ import 'package:quick_pall_local_repo/pages/NotificationsScreen.dart';
 import 'package:quick_pall_local_repo/pages/SendMoneyScreen.dart';
 import 'package:quick_pall_local_repo/pages/Sign-InScreen.dart';
 import 'package:quick_pall_local_repo/pages/TransactionViewScreen.dart';
+import 'package:quick_pall_local_repo/pages/WithdrawWindowScreen.dart';
 import 'package:quick_pall_local_repo/viewModels/TransactionsViewModel.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
@@ -254,7 +255,11 @@ class _HomeState extends State<Home> {
                           backgroundColor: Colors.transparent,
                           child: IconButton(
                               iconSize: 30,
-                              onPressed: () {},
+                              onPressed: () {
+                                Get.to(WithdrawWindowScreen(user: widget.user),
+                                    transition: Transition.rightToLeft,
+                                    duration: Duration(milliseconds: 500));
+                              },
                               icon: Icon(
                                 Icons.arrow_circle_right_outlined,
                                 color: Colors.black,
@@ -322,6 +327,7 @@ class _HomeState extends State<Home> {
                                 child: Row(
                                   children: [
                                     CircleAvatar(
+                                      backgroundColor: Colors.white,
                                       backgroundImage: NetworkImage(
                                           _transactionsList[index].Image),
                                       radius: 30,

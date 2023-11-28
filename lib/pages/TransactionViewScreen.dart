@@ -46,6 +46,7 @@ class TransactionViewScreen extends StatelessWidget {
                       height: 50,
                     ),
                     CircleAvatar(
+                      backgroundColor: Colors.white,
                       backgroundImage: NetworkImage(model.Image),
                       radius: 40,
                     ),
@@ -231,7 +232,7 @@ class TransactionViewScreen extends StatelessWidget {
   String getSenderOrRecieverText() {
     if (model.transactionType == "Sent") return "To";
     if (model.transactionType == "Recieve") return "From";
-    if (model.transactionType == "Withdraw") return "Account";
+    if (model.transactionType == "Withdraw") return "Withdraw from";
     return "";
   }
 }

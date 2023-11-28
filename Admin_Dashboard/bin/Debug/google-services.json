@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "516220487021",
+    "project_id": "quickpall",
+    "storage_bucket": "quickpall.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516220487021:android:0f15792da3c52556988664",
+        "android_client_info": {
+          "package_name": "com.example.quick_pall_local_repo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6YQD4NcVFt5l1gk670wIka6X-HK_CSPU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
