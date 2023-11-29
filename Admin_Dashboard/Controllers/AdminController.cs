@@ -16,63 +16,83 @@ namespace Admin_Dashboard.Controllers
     {
         public async static Task<bool> Login(string UserName,String  Password)
         {
-            FirestoreDb db = FirestoreDb.Create("quickpall", new FirestoreClientBuilder
+            try
             {
-                CredentialsPath = "quickpall-firebase-adminsdk-wfso1-77e2bb731a.json"
-            }.Build());
+
+                FirestoreDb db = FirestoreDb.Create ("quickpall", new FirestoreClientBuilder
+                {
+                    CredentialsPath = "quickpall-firebase-adminsdk-wfso1-77e2bb731a.json"
+                }.Build ());
 
 
 
-            DocumentReference docRef = db.Collection("Admin").Document("admin");
+                DocumentReference docRef = db.Collection ("Admin").Document ("admin");
 
-            DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
+                DocumentSnapshot snapshot = await docRef.GetSnapshotAsync ();
 
-            if (snapshot.Exists)
-            {
-                if (snapshot.GetValue<string>("UserName") == UserName && snapshot.GetValue<string>("Password") == Password)
-                    return true;
+                if ( snapshot.Exists )
+                {
+                    if ( snapshot.GetValue<string> ("UserName") == UserName && snapshot.GetValue<string> ("Password") == Password )
+                        return true;
+                }
+                return false;
             }
-            return false;
+            catch(Exception e) {
+                Logger.PushLog (e.ToString (), "AdminController", "Login");
+                Console.WriteLine (e);
+                return false;
+            }
         }
         public async static Task<List<AccountHolder>> LoadAccountHoldersData (Guna2DataGridView dgv)
         {
-            FirestoreDb db = FirestoreDb.Create ("quickpall", new FirestoreClientBuilder
+
+            try
             {
-                CredentialsPath = "quickpall-firebase-adminsdk-wfso1-77e2bb731a.json"
-            }.Build ());
-            var collection = db.Collection ("AccountHolder"); // Replace with your actual collection name
+                FirestoreDb db = FirestoreDb.Create ("quickpall", new FirestoreClientBuilder
+                {
+                    CredentialsPath = "quickpall-firebase-adminsdk-wfso1-77e2bb731a.json"
+                }.Build ());
+                var collection = db.Collection ("AccountHolder"); // Replace with your actual collection name
 
-            var query = collection.OrderBy ("Name"); // Replace "fieldName" with the field you want to order by
+                var query = collection.OrderBy ("Name"); // Replace "fieldName" with the field you want to order by
 
-            var querySnapshot = await query.GetSnapshotAsync ();
+                var querySnapshot = await query.GetSnapshotAsync ();
 
-            var dataList = new List<AccountHolder> (); // Replace YourDataClass with the class representing your Firestore documents
+                var dataList = new List<AccountHolder> (); // Replace YourDataClass with the class representing your Firestore documents
 
-            foreach ( var document in querySnapshot.Documents )
-            {
-                var data = MapDocumentToAccountHolder (document);
-                if(data.IsActive) { 
-                
-                dataList.Add (data);
+                foreach ( var document in querySnapshot.Documents )
+                {
+                    var data = MapDocumentToAccountHolder (document);
+                    if ( data.IsActive )
+                    {
+
+                        dataList.Add (data);
+                    }
                 }
+                // Clear existing columns and data
+                dgv.Columns.Clear ();
+                dgv.DataSource = null;
+
+                // Add columns to the DataGridView
+                dgv.Columns.Add ("Name", "Name");
+                dgv.Columns.Add ("Country", "Country");
+                dgv.Columns.Add ("Email", "Email");
+                dgv.Columns.Add ("Money", "Money");
+
+                // Populate the DataGridView with data
+                foreach ( var accountHolder in dataList )
+                {
+                    dgv.Rows.Add (accountHolder.Name, accountHolder.Country, accountHolder.Email, accountHolder.Money);
+                }
+                // Assuming you have a DataGridView named dataGridView1
+                return dataList;
             }
-            // Clear existing columns and data
-            dgv.Columns.Clear ();
-            dgv.DataSource = null;
-
-            // Add columns to the DataGridView
-            dgv.Columns.Add ("Name", "Name");
-            dgv.Columns.Add ("Country", "Country");
-            dgv.Columns.Add ("Email", "Email");
-            dgv.Columns.Add ("Money", "Money");
-
-            // Populate the DataGridView with data
-            foreach ( var accountHolder in dataList )
+            catch(Exception e )
             {
-                dgv.Rows.Add (accountHolder.Name, accountHolder.Country, accountHolder.Email, accountHolder.Money);
+                Logger.PushLog (e.ToString (), "AdminController", "LoadAccountHoldersData");
+                Console.WriteLine (e);
+                return null;
             }
-            // Assuming you have a DataGridView named dataGridView1
-            return dataList;
         }
         private static AccountHolder MapDocumentToAccountHolder ( DocumentSnapshot document )
         {

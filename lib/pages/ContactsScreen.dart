@@ -181,6 +181,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 CircleAvatar(
                                   radius: 25,
@@ -191,6 +192,7 @@ class _ContactsScreenState extends State<ContactsScreen> {
                                   width: 10,
                                 ),
                                 Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       filteredFriends[index].Name,

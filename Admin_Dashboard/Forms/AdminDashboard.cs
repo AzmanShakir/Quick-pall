@@ -85,5 +85,10 @@ namespace Admin_Dashboard.Forms
         {
 
         }
+
+        private void AdminDashboard_FormClosed ( object sender, FormClosedEventArgs e )
+        {
+            Application.Exit ();
+        }
     }
 }

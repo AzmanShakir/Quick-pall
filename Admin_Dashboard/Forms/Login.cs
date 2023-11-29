@@ -37,13 +37,23 @@ namespace Admin_Dashboard
             if( await AdminController.Login (this.txtUserName.Text, this.txtPassword.Text))
             {
                 AdminDashboard adminDashboard = new AdminDashboard();
-                /*this.Hide ();*/
+                this.Hide ();
                 adminDashboard.Show();
             }
             else
             {
                 this.epLogin.SetError (this.btnLogin, "Incorrect UserName or Password");
             }
+        }
+
+        private void Login_Load ( object sender, EventArgs e )
+        {
+
+        }
+
+        private void Login_FormClosed ( object sender, FormClosedEventArgs e )
+        {
+            Application.Exit ();
         }
     }
 }

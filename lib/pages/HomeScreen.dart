@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:quick_pall_local_repo/Controllers/accountController.dart';
 import 'package:quick_pall_local_repo/controllers/transactionController.dart';
+import 'package:quick_pall_local_repo/controllers/withDrawController.dart';
 import 'package:quick_pall_local_repo/models/AccountHolder.dart';
 import 'package:quick_pall_local_repo/pages/AccountScreen.dart';
 import 'package:quick_pall_local_repo/pages/ContactsScreen.dart';
@@ -184,10 +185,13 @@ class _HomeState extends State<Home> {
                           radius: 25,
                           backgroundColor: Colors.transparent,
                           child: IconButton(
-                              onPressed: () {
-                                Get.to(SendMoneyScreen(user: widget.user),
+                              onPressed: () async {
+                                await Get.to(SendMoneyScreen(user: widget.user),
                                     transition: Transition.rightToLeft,
                                     duration: Duration(milliseconds: 500));
+                                setState(() {
+                                  ReloadUser();
+                                });
                               },
                               icon: Icon(
                                 Icons.send_outlined,
@@ -219,10 +223,14 @@ class _HomeState extends State<Home> {
                           radius: 25,
                           backgroundColor: Colors.transparent,
                           child: IconButton(
-                              onPressed: () {
-                                Get.to(MoneyRequestScreen(user: widget.user),
+                              onPressed: () async {
+                                await Get.to(
+                                    MoneyRequestScreen(user: widget.user),
                                     transition: Transition.rightToLeft,
                                     duration: Duration(milliseconds: 500));
+                                setState(() {
+                                  ReloadUser();
+                                });
                               },
                               icon: Icon(
                                 Icons.download_outlined,
@@ -255,10 +263,12 @@ class _HomeState extends State<Home> {
                           backgroundColor: Colors.transparent,
                           child: IconButton(
                               iconSize: 30,
-                              onPressed: () {
-                                Get.to(WithdrawWindowScreen(user: widget.user),
+                              onPressed: () async {
+                                await Get.to(
+                                    WithdrawWindowScreen(user: widget.user),
                                     transition: Transition.rightToLeft,
                                     duration: Duration(milliseconds: 500));
+                                ReloadUser();
                               },
                               icon: Icon(
                                 Icons.arrow_circle_right_outlined,
@@ -414,5 +424,16 @@ class _HomeState extends State<Home> {
         widget.user = u;
       }
     });
+  }
+
+  ReloadUser() {
+    // var u =
+    // await AccountController.SignIn(widget.user.Email, widget.user.Password);
+    // if (u != null && u is AccountHolder) {
+    setState(() {
+      // widget.user = u;
+      _accountBalance = widget.user.Money.toString();
+    });
+    // }
   }
 }
